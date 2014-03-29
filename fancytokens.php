@@ -194,7 +194,7 @@ $tokens['communitynews'] = array(
   		    // print "<br>contacts: ";
 	            // print_r($contactIDs);
 		    foreach ( $contactIDs as $cid ) {
-		    
+		         $tmp_event_html = ""; 
 		          $dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
   		     while($dao->fetch()){
   		     	$eid = $dao->id;
