@@ -2,7 +2,7 @@
 <extension key="com.pogstone.fancytokens" type="module">
   <file>fancytokens</file>
   <name>Fancy Tokens</name>
-  <description>Community News and Engagement tokens, such as for contribution pages, upcoming events and stand-alone profiles. All hyperlinks include the recipient checksum as appropriate.  </description>
+  <description>Community News and Engagement tokens, such as for contribution pages, upcoming event lists, individual event registration pages, and stand-alone CiviCRM profiles. All hyperlinks include the recipient checksum as appropriate.  </description>
   <urls>
   <url>http://pogstone.com</url>
   </urls>
@@ -12,8 +12,8 @@
     <email>info@pogstone.com</email>
   </maintainer>
   <releaseDate>2014-02-15</releaseDate>
-  <version>1.1</version>
-  <develStage>alpha</develStage>
+  <version>2.0</version>
+  <develStage>beta</develStage>
   <compatibility>
     <ver>4.3</ver>
     <ver>4.4</ver>
