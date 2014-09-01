@@ -4,15 +4,40 @@ require_once 'fancytokens.civix.php';
 
 
 function fancytokens_civicrm_tokens( &$tokens ){  
-
-$tokens['communitynews'] = array(
-  	'communitynews.upcomingevents___day_7' =>   'Community News & Engagement: Events in the next 7 days',
-  	'communitynews.upcomingevents___day_14' =>  'Community News & Engagement: Events in the next 14 days',
-  	'communitynews.upcomingevents___day_30' =>  'Community News & Engagement: Events in the next 30 days', 
-  	'communitynews.upcomingevents___week_3' =>  'Community News & Engagement: Events in the next 3 weeks', 
-  	'communitynews.upcomingevents___month_3' => 'Community News & Engagement: Events in the next 3 months',  
-  	);
+	$tokens['communitynews'] = array(
+	  	'communitynews.upcomingevents___day_7' =>   'Community News & Engagement: Events in the next 7 days',
+	  	'communitynews.upcomingevents___day_14' =>  'Community News & Engagement: Events in the next 14 days',
+	  	'communitynews.upcomingevents___day_30' =>  'Community News & Engagement: Events in the next 30 days', 
+	  	'communitynews.upcomingevents___week_3' =>  'Community News & Engagement: Events in the next 3 weeks', 
+	  	'communitynews.upcomingevents___month_3' => 'Community News & Engagement: Events in the next 3 months',  
+	  	);
   	
+  	
+  	
+  	// create tokens for the next x events that allow online registration
+  	$event_sql = "select e.id, e.title, date(e.start_date) as start_date FROM civicrm_event e
+  	WHERE e.start_date >= now() and e.is_active =1 AND e.is_online_registration = 1
+  	AND e.is_template <> 1
+  	AND ( e.registration_end_date is null || now() <= e.registration_end_date ) 
+  	AND ( e.registration_start_date is null || now() >= e.registration_start_date )
+  	ORDER BY e.start_date
+  	LIMIT 15 ";
+  	
+  	 $dao =& CRM_Core_DAO::executeQuery( $event_sql,   CRM_Core_DAO::$_nullArray ) ;
+	
+  	while($dao->fetch()){
+  		$e_id = $dao->id;
+  		$e_title = $dao->title;
+  		$e_start_date = $dao->start_date;
+  		$label = 'Community News & Engagement: Event Registration Page: '.$e_title.' on '.$e_start_date.' (id: '.$e_id.')'; 
+  		$key = 'communitynews.event_registrationpage___'.$e_id ;
+  		
+  		 $tokens['communitynews'][$key] = $label; 
+  	}
+  	$dao->free();	
+  	
+  	
+  	// Create tokens for all active Contribution Pages
   	$params = array(
 	  'version' => 3,
 	  'sequential' => 1,
@@ -34,7 +59,7 @@ $tokens['communitynews'] = array(
 	   }
 	
 	
-	// Get all active profiles
+	// Get all active profiles and create tokens for the ones that can be stand-alone. 
 	$params = array(
 	  'version' => 3,
 	  'sequential' => 1,
@@ -65,13 +90,16 @@ $tokens['communitynews'] = array(
 		   }
 	
 	}	
+		
 	
 	}
 	
 	
 	
   function fancytokens_civicrm_tokenValues( &$values, &$contactIDs, $job = null, $tokens = array(), $context = null) {
-  	if(!empty($tokens['communitynews'])){
+  	
+	    
+  if(!empty($tokens['communitynews'])){
         $website_host_name = $_SERVER['SERVER_NAME']; 
         $ssl_in_use = $_SERVER['HTTPS'];
 	if( strlen($ssl_in_use) > 0){
@@ -194,7 +222,7 @@ $tokens['communitynews'] = array(
   		    // print "<br>contacts: ";
 	            // print_r($contactIDs);
 		    foreach ( $contactIDs as $cid ) {
-		         $tmp_event_html = ""; 
+		       $tmp_event_html = ""; 
 		          $dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
   		     while($dao->fetch()){
   		     	$eid = $dao->id;
@@ -225,7 +253,7 @@ $tokens['communitynews'] = array(
   		     		$summary_html = ""; 
   		     	
   		     	} 
-  		     	$tmp_event_html = $tmp_event_html."<br><br><a href='".$event_info_link_url.$eid."'>".$e_title."</a> at ".
+  		     	$tmp_event_html = $tmp_event_html."\n<br><br><a href='".$event_info_link_url.$eid."'>".$e_title."</a> on ".
   		     		$e_start_date.$register_html.$summary_html; 
   		     }
   		     $dao->free(); 
@@ -236,12 +264,88 @@ $tokens['communitynews'] = array(
 	            }
 	            
 	            }
+                 }else if( $partial_token == 'event_registrationpage'){
+                 
+                 // communitynews.event_registrationpage___'.$e_id
+                 $token_event_id = $token_as_array[1];
+	           
+	            
+	           
+	            $tmp_event_html = ""; 
+	            if( is_numeric( $token_event_id) ){ 
+	            // get event data 
+	            $sql = "SELECT e.id , e.summary,  e.title, e.registration_link_text, 
+	             date_format( e.start_date, '%W %b %e at %l:%i %p' ) as start_date  ,
+	             if( e.is_online_registration = 1 AND 
+	               ( e.registration_end_date is null || now() <= e.registration_end_date ) AND
+	               ( e.registration_start_date is null || now() >= e.registration_start_date ), '1', '0') as 
+	             show_registration_link  
+	             FROM civicrm_event e 
+	            WHERE e.is_active = 1 AND e.is_public = 1  AND e.is_template <> 1 AND 
+	            e.start_date >= now() AND e.id = '".$token_event_id."'  
+	            ORDER BY e.start_date";
+	            
+	           // print "<br>SQL: ".$sql; 
+	            
+	         //   $event_info_link_url = $protocol.$website_host_name."/civicrm/event/info?reset=1&id="; 
+	            $event_register_link_url = $protocol.$website_host_name."/civicrm/event/register?reset=1&id="; 
+		
+		  	
+  		    // print "<br>contacts: ";
+	            // print_r($contactIDs);
+		    foreach ( $contactIDs as $cid ) {
+		       $tmp_event_html = ""; 
+		          $dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
+  		     while($dao->fetch()){
+  		     	$eid = $dao->id;
+  		     	$e_title = $dao->title;
+  		     	$e_start_date = $dao->start_date; 
+  		     	$e_short_summary = $dao->summary; 
+  		     	$e_show_registration_link = $dao->show_registration_link; 
+  		     	$registration_link_text = $dao->registration_link_text; 
+  		     	
+  		     	$register_html = ""; 
+  		     	if( $e_show_registration_link == "1" ){
+  		     	    
+  		     	    $tmp_checksum = CRM_Contact_BAO_Contact_Utils::generateChecksum($cid); 
+  		     	   // print "<br>checksum: ".$tmp_checksum; 
+  		     	   // If you want to use the checksum style URL, then add this to the end of the URL
+  		     	   // "&cs=".$tmp_checksum."&cid=".$cid
+  		     	   $full_register_link = $event_register_link_url.$eid."&cs=".$tmp_checksum."&cid=".$cid; 
+  		     	    $register_html = "<br>&nbsp;<b><a href='".$full_register_link."'>".$registration_link_text."</b></a>"; 
+  		     	}else{
+  		     	    $register_html = ""; 
+  		     	}
+  		     	
+  		     	
+  		     	if(strlen( $e_short_summary  ) > 0){
+  		     		$summary_html = " <br>&nbsp;&nbsp;&nbsp;&nbsp; ".$e_short_summary; 
+  		     	
+  		     	}else{
+  		     		$summary_html = ""; 
+  		     	
+  		     	} 
+  		     	$tmp_event_html = $tmp_event_html."\n<br><br>".$e_title." on ".
+  		     		$e_start_date.$register_html.$summary_html; 
+  		     }
+  		     $dao->free(); 
+		    
+		    // Populate the token value for this contact. 
+		      $values[$cid][$token_to_fill] =  $tmp_event_html;
+		          
+	            }
+	            
+	            }
+                 
                  }
 	     next($tokens['communitynews']);    
 	 }
   	
   
-  }
+  }    
+	           
+  		  
+  
 
   
   }	
