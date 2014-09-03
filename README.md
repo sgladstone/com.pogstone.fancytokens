@@ -11,3 +11,5 @@ Main features:
    C) There is a token for each of the next X event registration pages ( i.e. future events that also have online registration enabled).  The token includes the event ID which can be manually changed to any valid event ID. The hyperlink will include the checksum for the recipient.
    
    D) There is one token for each active profile that does not use any fields that would prevent it from being used as a stand-alone profile form. For example, it does not create tokens for profiles that use participant or contribution fields. This token will produce a hyperlink that includes the checksum for the recipient. The clickable text will be the title of the profile.  
+
+  E) If this extension is running under Drupal and the CiviCRM-WebForm integration module is installed, then one token will be created for each published WebForm. 
