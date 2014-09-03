@@ -93,11 +93,56 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   }
 	
 	}	
-		
 	
+	// Check if this is Drupal, and if so check if the 'WebForm CiviCRM' module is installed.
+	// Then generate tokens for each published Drupal WebForm that uses CiviCRM integration. 
+	$config = CRM_Core_Config::singleton();
+	//print "<br><br>";
+	//print_r($config);
+	if ($config->userSystem->is_drupal){
+		if( module_exists( "webform_civicrm") && module_exists( "webform_civicrm")){
+
+			$drupal_db = getUserFrameworkDatabaseName(); 
+			$sql = "SELECT cforms.nid, node.title FROM $drupal_db.webform_civicrm_forms cforms
+				JOIN $drupal_db.node ON cforms.nid = node.nid AND node.status = 1 ";
+			
+				
+				// LEFT JOIN url_alias ua ON cforms.nid = substr( ua.source)  AND ua.source LIKE 'node/%'
+			$dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
+	
+  			while($dao->fetch()){
+				$nid = $dao->nid;
+				$title = $dao->title; 
+				//$url_alias = $dao->alias;
+				$key = 'communitynews.dwform___'.$nid ;
+			    	$label = "Community News & Engagement: Form: $title (id: $nid)"; 
+			   
+			   	$tokens['communitynews'][$key] = $label; 
+			} 
+			$dao->free();
+		}
+	
+	}	
+	
+ }
+	
+  function getUserFrameworkDatabaseName(){
+  	// ['userFrameworkDSN'] => mysql://my_db_username:mypassword@localhost/my_db_name?new_link=true
+	
+	$cms_db_name = "";
+	$config = CRM_Core_Config::singleton();
+	$cms_dsn_str = $config->userFrameworkDSN ;
+	
+	$cms_tmp1 = explode( '@', $cms_dsn_str) ; 
+	$cms_tmp2 = explode( '/', $cms_tmp1[1]);
+	$cms_tmp3 = explode( '?', $cms_tmp2[1]);
+	
+	//print "<br><br>".$cms_tmp2[1];
+	if( strlen($cms_tmp3[0]) > 0){
+		$cms_db_name = $cms_tmp3[0]; 
 	}
-	
-	
+  	return $cms_tmp3[0];
+  }	
 	
   function fancytokens_civicrm_tokenValues( &$values, &$contactIDs, $job = null, $tokens = array(), $context = null) {
   	
@@ -340,6 +385,47 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	            
 	            }
                  
+                 }else if( $partial_token == 'dwform'  ){
+                 	$token_node_id = $token_as_array[1];
+	           
+	            
+	           $drupal_db = getUserFrameworkDatabaseName(); 
+	            
+	            if( is_numeric( $token_node_id) ){ 
+	            // get Drupal WebForm data for this node id.
+	            $sql = "SELECT cforms.nid, node.title, ua.alias 
+	            		FROM $drupal_db.webform_civicrm_forms cforms
+				JOIN $drupal_db.node ON cforms.nid = node.nid AND node.status = 1 
+				LEFT JOIN $drupal_db.url_alias ua ON cforms.nid = SUBSTRING( ua.source, 6 )
+				  AND ua.source LIKE 'node/%'
+				WHERE node.nid = $token_node_id";
+	             $dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
+  		     while($dao->fetch()){
+  		     	$tmp_title = $dao->title;
+  		     	$tmp_alias = $dao->alias; 
+  		     	$tmp_nid = $dao->nid; 
+  		     	if( strlen( $tmp_alias) > 0){
+  		     		$partial_webform_link_url = $protocol.$website_host_name."/".$tmp_alias; 
+  		     	}else{
+  		     		$partial_webform_link_url = $protocol.$website_host_name."/node/".$tmp_nid; 
+  		     	}
+  		     	$link_label = $tmp_title; 
+  		     
+  		     }
+  		     $dao->free(); 
+  		     
+  		     foreach ( $contactIDs as $cid ) {
+	                   
+  		     	    $tmp_checksum = CRM_Contact_BAO_Contact_Utils::generateChecksum($cid); 
+  		     	    $full_webform_link = $partial_webform_link_url."?"."cs=".$tmp_checksum."&cid=".$cid; 
+  		     	    $tmp_webform_html = "<a href='".$full_webform_link."'>".$link_label."</a>";
+  		     	    
+	                   $values[$cid][$token_to_fill] =  $tmp_webform_html;
+	               
+	               
+	               }
+	            
+                 }
                  }
 	     next($tokens['communitynews']);    
 	 }
