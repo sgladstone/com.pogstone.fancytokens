@@ -5,11 +5,11 @@ require_once 'fancytokens.civix.php';
 
 function fancytokens_civicrm_tokens( &$tokens ){  
 	$tokens['communitynews'] = array(
-	  	'communitynews.upcomingevents___day_7' =>   'Community News & Engagement: Events in the next 7 days',
-	  	'communitynews.upcomingevents___day_14' =>  'Community News & Engagement: Events in the next 14 days',
-	  	'communitynews.upcomingevents___day_30' =>  'Community News & Engagement: Events in the next 30 days', 
-	  	'communitynews.upcomingevents___week_3' =>  'Community News & Engagement: Events in the next 3 weeks', 
-	  	'communitynews.upcomingevents___month_3' => 'Community News & Engagement: Events in the next 3 months',  
+	  	'communitynews.upcomingevents___day_7' =>   'Events in the next 7 days :: Events',
+	  	'communitynews.upcomingevents___day_14' =>  'Events in the next 14 days :: Events',
+	  	'communitynews.upcomingevents___day_30' =>  'Events in the next 30 days :: Events', 
+	  	'communitynews.upcomingevents___week_3' =>  'Events in the next 3 weeks :: Events', 
+	  	'communitynews.upcomingevents___month_3' => 'Events in the next 3 months :: Events',  
 	  	);
   	
   	
@@ -29,7 +29,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
   		$e_id = $dao->id;
   		$e_title = $dao->title;
   		$e_start_date = $dao->start_date;
-  		$label = 'Community News & Engagement: Event Registration Page: '.$e_title.' on '.$e_start_date.' (id: '.$e_id.')'; 
+  		$label = 'Registration Page: '.$e_title.' on '.$e_start_date.' (id: '.$e_id.')  :: Events'; 
   		$key = 'communitynews.event_registrationpage___'.$e_id ;
   		
   		 $tokens['communitynews'][$key] = $label; 
@@ -52,7 +52,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   foreach($contrib_pages as $cur){
 		   
 			    $key = 'communitynews.contributionpage___'.$cur['id'] ;
-			    $label = 'Community News & Engagement: Contribution Page: '.$cur['title'].' (id: '.$cur['id'].')'; 
+			    $label = $cur['title'].' (id: '.$cur['id'].') :: Contribution Pages'; 
 			   
 			   $tokens['communitynews'][$key] = $label; 
 		   }	   
@@ -84,7 +84,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   	if ( false == ( in_array("Participant", $type_array ) || in_array("Organization", $type_array ) || in_array("Membership", $type_array ) || in_array("Household", $type_array ) || in_array("Contributions", $type_array )  || in_array("Activity", $type_array )  )) {
 		   	
 		   		$key = 'communitynews.standaloneprofile___'.$cur['id'] ;
-			    $label = 'Community News & Engagement: Standalone Profile Form: '.$cur['title'].' (id: '.$cur['id'].')'; 
+			    $label = $cur['title'].' (id: '.$cur['id'].') :: Forms'; 
 			   
 			   $tokens['communitynews'][$key] = $label; 
 		   	
@@ -115,7 +115,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 				$title = $dao->title; 
 				//$url_alias = $dao->alias;
 				$key = 'communitynews.dwform___'.$nid ;
-			    	$label = "Community News & Engagement: Form: $title (id: $nid)"; 
+			    	$label = "$title (nid: $nid) :: Forms"; 
 			   
 			   	$tokens['communitynews'][$key] = $label; 
 			} 
@@ -127,7 +127,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
  }
 	
   function getUserFrameworkDatabaseName(){
-  	// ['userFrameworkDSN'] => mysql://my_db_username:mypassword@localhost/my_db_name?new_link=true
+  	// ['userFrameworkDSN'] => mysql://dev1_username:mypassword@localhost/dev1_main?new_link=true
 	
 	$cms_db_name = "";
 	$config = CRM_Core_Config::singleton();
