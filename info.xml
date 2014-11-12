@@ -11,12 +11,11 @@
     <author>Sarah Gladstone at Pogstone Inc.</author>
     <email>info@pogstone.com</email>
   </maintainer>
-  <releaseDate>2014-09-01</releaseDate>
-  <version>2.2</version>
+  <releaseDate>2014-11-12</releaseDate>
+  <version>3.0</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>4.3</ver>
-    <ver>4.4</ver>
+    <ver>4.5</ver>
   </compatibility>
   <comments></comments>
   <civix>
