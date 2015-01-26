@@ -182,7 +182,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	        
 	        if($partial_token == 'standaloneprofile'){
 	        	$profile_id = $token_as_array[1];
-	           $partial_profile_link_url = $protocol.$website_host_name."/civicrm/profile/edit?reset=1&gid="; 
+	          $partial_profile_link_url = CRM_Utils_System::url('civicrm/profile/edit', 'reset=1&gid=', TRUE, NULL, TRUE, TRUE);
 	          
 	               	    
 	           if( is_numeric( $profile_id )){
@@ -211,7 +211,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	        
 	        }else if( $partial_token == 'contributionpage' ){
 	           $contrib_page_id = $token_as_array[1];
-	           $partial_contrib_page_link_url = $protocol.$website_host_name."/civicrm/contribute/transact?reset=1&id="; 
+	           $partial_contrib_page_link_url = CRM_Utils_System::url('civicrm/contribute/transact', 'reset=1&id=', TRUE, NULL, TRUE, TRUE);
 	           
 	               	    
 	           if( is_numeric( $contrib_page_id )){
@@ -263,8 +263,8 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	            
 	           // print "<br>SQL: ".$sql; 
 	            
-	            $event_info_link_url = $protocol.$website_host_name."/civicrm/event/info?reset=1&id="; 
-	            $event_register_link_url = $protocol.$website_host_name."/civicrm/event/register?reset=1&id="; 
+	            $event_info_link_url = CRM_Utils_System::url('civicrm/event/info', 'reset=1&id=', TRUE, NULL, TRUE, TRUE);
+              $event_register_link_url = CRM_Utils_System::url('civicrm/event/register', 'reset=1&id=', TRUE, NULL, TRUE, TRUE);
 		
 		  	
   		    // print "<br>contacts: ";
@@ -336,7 +336,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	           // print "<br>SQL: ".$sql; 
 	            
 	         //   $event_info_link_url = $protocol.$website_host_name."/civicrm/event/info?reset=1&id="; 
-	            $event_register_link_url = $protocol.$website_host_name."/civicrm/event/register?reset=1&id="; 
+	            $event_register_link_url = CRM_Utils_System::url('civicrm/event/register', 'reset=1&id=', TRUE, NULL, TRUE, TRUE);
 		
 		  	
   		    // print "<br>contacts: ";
