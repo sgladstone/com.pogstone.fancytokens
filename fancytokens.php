@@ -81,7 +81,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   	
 		   	}
 		   	$type_array = explode( "," , $p_type); // Contributions Activity
-		   	if ( false == ( in_array("Participant", $type_array ) || in_array("Organization", $type_array ) || in_array("Membership", $type_array ) || in_array("Household", $type_array ) || in_array("Contributions", $type_array )  || in_array("Activity", $type_array )  )) {
+		   	if ( false == ( in_array("Participant", $type_array ) || in_array("Membership", $type_array ) || in_array("Household", $type_array ) || in_array("Contributions", $type_array )  || in_array("Activity", $type_array )  )) {
 		   	
 		   		$key = 'communitynews.standaloneprofile___'.$cur['id'] ;
 			    $label = $cur['title'].' (id: '.$cur['id'].') :: Forms'; 
