@@ -8,14 +8,15 @@
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Sarah Gladstone at Pogstone Inc.</author>
+    <author>Sarah Gladstone</author>
     <email>info@pogstone.com</email>
   </maintainer>
   <releaseDate>2014-11-12</releaseDate>
-  <version>3.0</version>
+  <version>3.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.5</ver>
+     <ver>4.6</ver>
   </compatibility>
   <comments></comments>
   <civix>
