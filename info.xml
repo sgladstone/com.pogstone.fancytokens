@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <extension key="com.pogstone.fancytokens" type="module">
   <file>fancytokens</file>
-  <name>Fancy Tokens</name>
+  <name>Fancy Tokens: Makes preparing email newsletters a breeze with tokens for upcoming events, contribution pages, and forms (with checksums too!)</name>
   <description>Community News and Engagement tokens, such as for contribution pages, upcoming event lists, individual event registration pages, and stand-alone CiviCRM profiles. If Drupal WebForm is in use, then any webforms that use CiviCRM integration will also be available as a token.  All hyperlinks include the recipient checksum as appropriate.  </description>
   <urls>
   <url>http://pogstone.com</url>
@@ -11,8 +11,8 @@
     <author>Sarah Gladstone</author>
     <email>info@pogstone.com</email>
   </maintainer>
-  <releaseDate>2014-11-12</releaseDate>
-  <version>3.1</version>
+  <releaseDate>2015-05-24</releaseDate>
+  <version>3.2</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.5</ver>
