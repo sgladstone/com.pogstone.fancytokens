@@ -15,6 +15,7 @@
   <version>3.2</version>
   <develStage>stable</develStage>
   <compatibility>
+    <ver>4.4</ver>
     <ver>4.5</ver>
      <ver>4.6</ver>
   </compatibility>
