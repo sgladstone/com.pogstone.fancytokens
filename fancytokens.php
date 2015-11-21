@@ -100,15 +100,30 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	//print "<br><br>";
 	//print_r($config);
 	if ($config->userSystem->is_drupal){
-		if( module_exists( "webform_civicrm") && module_exists( "webform_civicrm")){
+		if( module_exists( "webform") && module_exists( "webform_civicrm")){
 
-			$drupal_db = getUserFrameworkDatabaseName(); 
-			$sql = "SELECT cforms.nid, node.title FROM $drupal_db.webform_civicrm_forms cforms
-				JOIN $drupal_db.node ON cforms.nid = node.nid AND node.status = 1 ";
+			//$drupal_db = getUserFrameworkDatabaseName(); 
+			//$sql = "SELECT cforms.nid, node.title FROM $drupal_db.webform_civicrm_forms cforms
+			//	JOIN $drupal_db.node ON cforms.nid = node.nid AND node.status = 1 ";
 			
+			$dsql =  "SELECT cforms.nid, node.title FROM {webform_civicrm_forms} cforms
+				JOIN {node} node ON cforms.nid = node.nid AND node.status = 1 ";
 				
-				// LEFT JOIN url_alias ua ON cforms.nid = substr( ua.source)  AND ua.source LIKE 'node/%'
-			$dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
+			$dq_result = db_query( $dsql ); 
+			
+			foreach ($dq_result as $record) {
+			        $nid = $record->nid;
+				$title = $record->title; 
+				
+				$key = 'communitynews.dwform___'.$nid ;
+			    	$label = "$title (nid: $nid) :: Forms"; 
+			   
+			   	$tokens['communitynews'][$key] = $label; 
+			
+			
+			}	
+				
+			/*$dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
 	
   			while($dao->fetch()){
 				$nid = $dao->nid;
@@ -120,6 +135,8 @@ function fancytokens_civicrm_tokens( &$tokens ){
 			   	$tokens['communitynews'][$key] = $label; 
 			} 
 			$dao->free();
+			
+			*/
 		}
 	
 	}	
@@ -389,10 +406,33 @@ function fancytokens_civicrm_tokens( &$tokens ){
                  	$token_node_id = $token_as_array[1];
 	           
 	            
-	           $drupal_db = getUserFrameworkDatabaseName(); 
+	           // $drupal_db = getUserFrameworkDatabaseName(); 
 	            
 	            if( is_numeric( $token_node_id) ){ 
 	            // get Drupal WebForm data for this node id.
+	            $dsql = "SELECT cforms.nid, node.title, ua.alias 
+	            		FROM {webform_civicrm_forms} cforms
+				JOIN {node} node ON cforms.nid = node.nid AND node.status = 1 
+				LEFT JOIN {url_alias} ua ON cforms.nid = SUBSTRING( ua.source, 6 )
+				  AND ua.source LIKE 'node/%'
+				WHERE node.nid = $token_node_id";
+				
+		    $dq_result = db_query( $dsql ); 
+		    foreach ($dq_result as $record) {
+		    	$tmp_title = $record->title;
+  		     	$tmp_alias = $record->alias; 
+  		     	$tmp_nid = $record->nid; 
+  		     	if( strlen( $tmp_alias) > 0){
+  		     		$partial_webform_link_url = $protocol.$website_host_name."/".$tmp_alias; 
+  		     	}else{
+  		     		$partial_webform_link_url = $protocol.$website_host_name."/node/".$tmp_nid; 
+  		     	}
+  		     	$link_label = $tmp_title; 
+  		     	
+		    
+		    }
+	            
+	            /*
 	            $sql = "SELECT cforms.nid, node.title, ua.alias 
 	            		FROM $drupal_db.webform_civicrm_forms cforms
 				JOIN $drupal_db.node ON cforms.nid = node.nid AND node.status = 1 
@@ -413,6 +453,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
   		     
   		     }
   		     $dao->free(); 
+  		     */
   		     
   		     foreach ( $contactIDs as $cid ) {
 	                   
