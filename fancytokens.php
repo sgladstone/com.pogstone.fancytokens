@@ -100,7 +100,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	//print "<br><br>";
 	//print_r($config);
 	if ($config->userSystem->is_drupal){
-		if( module_exists( "webform") && module_exists( "webform_civicrm")){
+		if (function_exists("module_exists") && module_exists("webform_civicrm")) {
 
 			//$drupal_db = getUserFrameworkDatabaseName(); 
 			//$sql = "SELECT cforms.nid, node.title FROM $drupal_db.webform_civicrm_forms cforms
