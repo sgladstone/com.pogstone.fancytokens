@@ -162,10 +162,15 @@ function fancytokens_civicrm_tokens( &$tokens ){
   }	
 	
   function fancytokens_civicrm_tokenValues( &$values, &$contactIDs, $job = null, $tokens = array(), $context = null) {
-  	
+  
+  
+      	
 	    
   if(!empty($tokens['communitynews'])){
-        $website_host_name = $_SERVER['SERVER_NAME']; 
+       
+       $civi_url =  CRM_Utils_System::url('civicrm/example', NULL, TRUE, NULL, FALSE);
+      $website_host_name = parse_url( $civi_url, PHP_URL_HOST );
+      
         $ssl_in_use = $_SERVER['HTTPS'];
 	if( strlen($ssl_in_use) > 0){
 		$protocol = "https://"; 
