@@ -78,17 +78,19 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   	$p_type = "";  
 		   	if( isset( $cur['group_type'])){
 		   		$p_type = $cur['group_type']; 
+          // Some group_types are arrays, if the profile is used on an event form
+          $p_type = is_array($p_type) ? $p_type[0] : $p_type;
+
+  		   	$type_array = explode( "," , $p_type); // Contributions Activity
+		     	if ( false == ( in_array("Participant", $type_array ) || in_array("Membership", $type_array ) || in_array("Household", $type_array ) || in_array("Contributions", $type_array )  || in_array("Activity", $type_array )  )) {
 		   	
-		   	}
-		   	$type_array = explode( "," , $p_type); // Contributions Activity
-		   	if ( false == ( in_array("Participant", $type_array ) || in_array("Membership", $type_array ) || in_array("Household", $type_array ) || in_array("Contributions", $type_array )  || in_array("Activity", $type_array )  )) {
-		   	
-		   		$key = 'communitynews.standaloneprofile___'.$cur['id'] ;
-			    $label = $cur['title'].' (id: '.$cur['id'].') :: Forms'; 
+		     		$key = 'communitynews.standaloneprofile___'.$cur['id'] ;
+			      $label = $cur['title'].' (id: '.$cur['id'].') :: Forms'; 
 			   
-			   $tokens['communitynews'][$key] = $label; 
+			      $tokens['communitynews'][$key] = $label; 
 		   	
 		   	
+		   	  }
 		   	}
 		   }
 	
