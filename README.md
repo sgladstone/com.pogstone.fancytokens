@@ -1,6 +1,6 @@
 Install this extension as you would any other CiviCRM extension.  If you are using Drupal Webforms and your Drupal tables are in a different database than your CiviCRM tables then you will need to verify that the CiviCRM database user has permission to query tables in the Drupal database. 
 
-This extension provides additional mail merge tokens for CiviCRM for use in emails, mass emails, or PDF letters. All the tokens are under one of the following token categories:  "Events", "Contribution Pages", "Forms" or "Greeting"
+This extension provides additional mail merge tokens for CiviCRM for use in emails, mass emails, or PDF letters. All the tokens are under one of the following token categories:  "Events", "Contribution Pages", "Forms" or "Greetings"
 
 Main features:
 
