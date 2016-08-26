@@ -144,7 +144,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	}	
 	
 	
-	$tok_category_label = " :: Greeting"; 
+	$tok_category_label = " :: Greetings"; 
 	
 	$tokens['greetings'] = array(
 			'greetings.joint_casual' => 'Casual: Mike and Judy Kline (Uses nickname if available) '.$tok_category_label,
