@@ -125,20 +125,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 			
 			}	
 				
-			/*$dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
-	
-  			while($dao->fetch()){
-				$nid = $dao->nid;
-				$title = $dao->title; 
-				//$url_alias = $dao->alias;
-				$key = 'communitynews.dwform___'.$nid ;
-			    	$label = "$title (nid: $nid) :: Forms"; 
-			   
-			   	$tokens['communitynews'][$key] = $label; 
-			} 
-			$dao->free();
 			
-			*/
 		}
 	
 	}	
@@ -218,6 +205,11 @@ function fancytokens_civicrm_tokens( &$tokens ){
   	
   			// process organizations
   			$tmpGreetingHelper->process_organizations( $suffixes, $prefixes, $values, $greetings_token_names);
+  			
+  			// Deal with 'solo' type greetings, no need to worry about relationships.
+  			$tmpGreetingHelper->process_solo_greetings( $suffixes, $prefixes, $values, $contactIDs , $greetings_token_names);
+  			
+  			
   	
   		}
   		

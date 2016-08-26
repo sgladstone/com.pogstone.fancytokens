@@ -2,7 +2,105 @@
 
 class GreetingHelper{
 	
+// Deal with 'greetings.solo_casual' and 'greetings.solo_casual_nickname_only' 
+	function process_solo_greetings( &$suffixes, &$prefixes, &$values, &$contactIDs , &$greetings_token_names){
+		
+		
+		if(count( $contactIDs) ==0 ){	
+			return ; 
+		}
+		
+		$ids_for_sql = implode ( ", ", $contactIDs );
+		
+		$sql = "select c.id, c.first_name, c.nick_name, c.last_name,
+				c.display_name, c.contact_type 
+				FROM civicrm_contact c
+				WHERE c.id IN ( $ids_for_sql  ) ";
+		
+		$dao =& CRM_Core_DAO::executeQuery( $sql );
+		
+		while ( $dao->fetch( ) ) {
+			$first_name = $dao->first_name;
+			$last_name = $dao->last_name;
+			$nick_name = $dao->nick_name;
+			
+			$display_name = $dao->display_name;
+			$contact_type = $dao->contact_type; 
+			$cur_cid = $dao->id;
+			
+			$tmp_solo_casual_nickname_only = "";
+		
+			if(strlen($nick_name) > 0 ){
+				$tmp_solo_casual_nickname_only = $nick_name;
+			}else if(strlen($first_name) > 0 ){
+				$tmp_solo_casual_nickname_only = $first_name;
+			}else{
+				$tmp_solo_casual_nickname_only = $display_name;
+			}
+			
+			$tmp_solo_casual = "";
+			if( $contact_type == 'Individual'){
+				if(strlen($nick_name) > 0 && strlen($last_name) > 0  ){
+					$tmp_solo_casual = $nick_name." ".$last_name;
+				}else if(strlen($first_name) > 0 && strlen($last_name) == 0  ){
+					$tmp_solo_casual = $first_name;
+				}else if(strlen($first_name) > 0 && strlen($last_name) > 0){
+					$tmp_solo_casual = $first_name." ".$last_name;
+				}else if( strlen($nick_name) > 0 ){
+					$tmp_solo_casual = $nick_name;
+				}else if(strlen($first_name) > 0 ){
+					$tmp_solo_casual = $first_name;
+				}else{
+					$tmp_solo_casual = $display_name;
+				}
+				
+				if( strlen($tmp_solo_casual) == 0){
+					$tmp_solo_casual = $display_name;
+					
+				}
+				if( strlen($nick_name) > 0){
+					$tmp_solo_nickname_only = $nick_name;
+				}else if( strlen($first_name) > 0){
+					$tmp_solo_nickname_only = $first_name;
+				}else{
+					$tmp_solo_nickname_only =  $display_name;
+				}
+				
 
+				if( strlen($tmp_solo_nickname_only) == 0){
+					$tmp_solo_nickname_only = $display_name;
+						
+				}
+			}else{
+				// ie an organization or a household.
+				if( strlen($nick_name) > 0  ){
+					$tmp_solo_casual = $nick_name; 
+					$tmp_solo_nickname_only = $nick_name;
+				}else{
+					$tmp_solo_casual = $display_name;
+					$tmp_solo_nickname_only =  $display_name;
+				}
+				
+			}
+			
+			if(array_key_exists($cur_cid,  $values)){
+				
+				$values[$cur_cid]['greetings.solo_casual'] = $tmp_solo_casual;
+				$values[$cur_cid]['greetings.solo_casual_nickname_only'] = $tmp_solo_nickname_only; 
+				
+			}else{
+				//print "<br>Does NOT Contain $cur_cid";
+			}
+			
+		
+		}
+		$dao->free();
+		
+		
+		
+		
+	}
+	
 function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greetings_token_names,   $household_id){
 	 
 	 
@@ -21,10 +119,15 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 	}
 
 
+	$household_contains_minimum_individual = false;
+	$current_family = array();
 	// print "<br><br>Inside process_spouses: ".$id_list;
 	$sqlstr = "SELECT rel.contact_id_a  as cid_a, rel.contact_id_b as cid_b,  c1.prefix_id  , c1.first_name, c1.nick_name,
-	c1.last_name, c1.suffix_id, c1.birth_date, c1.gender_id, c1.is_deceased , c2.prefix_id as spouse_prefix_id,
-	c2.first_name as spouse_first_name,  c2.nick_name as spouse_nick_name,  c2.last_name as spouse_last_name, c2.suffix_id as spouse_suffix_id, c2.gender_id as spouse_gender_id, c2.is_deceased as spouse_is_deceased
+	c1.last_name, c1.suffix_id, c1.birth_date, c1.gender_id, c1.is_deceased , c1.contact_type as contact_type_a, 
+	c2.prefix_id as spouse_prefix_id,
+	c2.first_name as spouse_first_name,  c2.nick_name as spouse_nick_name,  c2.last_name as spouse_last_name,
+	c2.suffix_id as spouse_suffix_id, c2.gender_id as spouse_gender_id, c2.is_deceased as spouse_is_deceased,
+	c2.contact_type as contact_type_b
 	FROM civicrm_relationship AS rel
 	JOIN (
 	civicrm_contact AS c1,
@@ -103,6 +206,7 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 		 
 		 
 		$cur_contact_a["contact_id"] = $contact_dao->cid_a;
+		$cur_contact_a["contact_type"] = $contact_dao->contact_type_a;
 		$cur_contact_a["prefix"] = $prefix_label;
 		$cur_contact_a["first_name"] = $contact_dao->first_name;
 		$cur_contact_a["nick_name"] = $contact_dao->nick_name;
@@ -113,8 +217,10 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 
 		// add cur_contact to the family array.
 		$current_family[] =  $cur_contact_a ;
+		$household_contains_minimum_individual = true;
 
 		$cur_contact_b["contact_id"] = $contact_dao->cid_b;
+		$cur_contact_a["contact_type"] = $contact_dao->contact_type_b;
 		$cur_contact_b["prefix"] = $prefix_label_spouse;
 		$cur_contact_b["first_name"] =  $contact_dao->spouse_first_name;
 		$cur_contact_b["nick_name"] =  $contact_dao->spouse_nick_name;
@@ -127,22 +233,39 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 
 		// add cur_contact to the family array.
 		$current_family[] =  $cur_contact_b ;
+		$household_contains_minimum_individual = true;
 
-		// Add current household to family array if not empty.
+		
+		
+		// Add current household to family array if hh_id is not empty.
 		if( $household_id <> '' ){
 			$cur_hh["contact_id"] = $household_id ;
+			$cur_hh["contact_type"] = "Household";
 			$current_family[] = $cur_hh;
 		}
-		// print "<br>About to call process family greetings:<br> ";
-		// print_r($current_family);
-
+		
 		$this->process_family_greetings( $current_family, $values, $greetings_token_names);
 		$current_family = array();
-		//print "<br>";
-		//print_r($cur_contact);
+		
 	}
 	// print "<br>Count ".$i;
 	$contact_dao->free( );
+	
+	if($household_contains_minimum_individual == false){
+		if( $household_id <> '' ){
+			$cur_hh["contact_id"] = $household_id ;
+			$cur_hh["contact_type"] = "Household";
+			$current_family[] = $cur_hh;
+			
+			print "\n Inside a household with no people";
+			
+		}
+		
+		$this->process_family_greetings( $current_family, $values, $greetings_token_names);
+	}
+	
+	
+	
 
 
 
@@ -247,6 +370,9 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 
 	foreach($family as $cur_contact){
 		$tmp_cid = $cur_contact['contact_id'];
+		$tmp_contact_type = $cur_contact['contact_type'];
+		
+		
 		//print "<br>tmp_cid: $tmp_cid";
 		if(array_key_exists($tmp_cid,  $values)){
 			 
@@ -274,26 +400,54 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 
 	if($have_greeting == false){
 		if(count($family) == 1){
+			
+			if($family[0]["contact_type"] == "Household"){
 				
-			if( $family[0][spouse_last_name]){
-				// this is a married couple or a widow.
-				if($family[0]['is_deceased'] OR $family[0]['spouse_is_deceased'] ){
-					$needed_greets = $this->get_formatted_greeting_for_widow( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[0]['spouse_prefix'], $family[0]['spouse_first_name'], $family[0]['spouse_last_name'], $family[0]['spouse_suffix'], $family[0]['spouse_gender'], $family[0]['spouse_is_deceased'], $family[0]['nick_name'], $family[0]['spouse_nick_name'] );
-				}else{
-					$needed_greets = $this->get_formatted_greeting_for_couple( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[0]['spouse_prefix'], $family[0]['spouse_first_name'], $family[0]['spouse_last_name'], $family[0]['spouse_suffix'], $family[0]['spouse_gender'], $family[0]['spouse_is_deceased'], $family[0]['nick_name'], $family[0]['spouse_nick_name'] );
-				}
-			}else{
-				// this is a person in a one person household.
-				$uses_spouses_name = false;
-				$needed_greets = $this->get_formatted_greeting_for_single( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $uses_spouses_name,  $family[0]['nick_name'] );
+				if(array_key_exists($cur_hhid,  $values)){
+					$cur_hhid = $family[0]['contact_id'];
+					$hh_api_result = civicrm_api3('Contact', 'get', array(
+							'sequential' => 1,
+							'id' => $cur_hhid,
+					));
 					
-			}
-		}else if(count($family) >= 2){
-			if($family[0]['is_deceased'] OR $family[1]['is_deceased'] ){
-				$needed_greets = $this->get_formatted_greeting_for_widow( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[1]['prefix'], $family[1]['first_name'], $family[1]['last_name'], $family[1]['suffix'], $family[1]['gender'], $family[1]['is_deceased'] );
+					if( $hh_api_result['count'] == 1){
+					$hh_display_name = $hh_api_result['values'][0]['display_name'];
+					
+					//print "<br> Contains hhid $cur_hhid use greeting: $greeting";
+					$values[$cur_hhid][$token_joint_casual] = $hh_display_name;
+					$values[$cur_hhid][$token_formal_short] = $values[$cur_hhid][$token_formal_long] = $hh_display_name ;
+					$values[$cur_hhid][$token_formal_fn_short] = $values[$cur_hhid][$token_formal_fn_long] = $hh_display_name;
+				
+				
+					$values[$cur_hhid][$token_joint_casual_firstname_only] = $hh_display_name;
+					$values[$cur_hhid][$token_joint_casual_firstname_lastname] = $hh_display_name;
+					$values[$cur_hhid][$token_joint_casual_nickname_only] = $hh_display_name;
+					
+					}
+				}
+				
 			}else{
-				$needed_greets = $this->get_formatted_greeting_for_couple( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[1]['prefix'], $family[1]['first_name'], $family[1]['last_name'], $family[1]['suffix'], $family[1]['gender'], $family[1]['is_deceased'], $family[0]['nick_name'], $family[1]['nick_name'] );
+				
+				if( $family[0][spouse_last_name]){
+					// this is a married couple or a widow.
+					if($family[0]['is_deceased'] OR $family[0]['spouse_is_deceased'] ){
+						$needed_greets = $this->get_formatted_greeting_for_widow( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[0]['spouse_prefix'], $family[0]['spouse_first_name'], $family[0]['spouse_last_name'], $family[0]['spouse_suffix'], $family[0]['spouse_gender'], $family[0]['spouse_is_deceased'], $family[0]['nick_name'], $family[0]['spouse_nick_name'] );
+					}else{
+						$needed_greets = $this->get_formatted_greeting_for_couple( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[0]['spouse_prefix'], $family[0]['spouse_first_name'], $family[0]['spouse_last_name'], $family[0]['spouse_suffix'], $family[0]['spouse_gender'], $family[0]['spouse_is_deceased'], $family[0]['nick_name'], $family[0]['spouse_nick_name'] );
+					}
+				}else{
+					// this is a person in a one person household.
+					$uses_spouses_name = false;
+					$needed_greets = $this->get_formatted_greeting_for_single( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $uses_spouses_name,  $family[0]['nick_name'] );
+						
+				}
 			}
+			}else if(count($family) >= 2){
+				if($family[0]['is_deceased'] OR $family[1]['is_deceased'] ){
+					$needed_greets = $this->get_formatted_greeting_for_widow( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[1]['prefix'], $family[1]['first_name'], $family[1]['last_name'], $family[1]['suffix'], $family[1]['gender'], $family[1]['is_deceased'] );
+				}else{
+					$needed_greets = $this->get_formatted_greeting_for_couple( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[1]['prefix'], $family[1]['first_name'], $family[1]['last_name'], $family[1]['suffix'], $family[1]['gender'], $family[1]['is_deceased'], $family[0]['nick_name'], $family[1]['nick_name'] );
+				}
 
 		}
 	}
