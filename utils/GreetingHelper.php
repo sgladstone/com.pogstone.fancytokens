@@ -677,7 +677,7 @@ function process_singles(&$suffixes, &$prefixes, &$values, $greetings_token_name
 	 //  print_r($cur_contact);
 		// print "<br>current joint_greeting: ".$cur_contact['contact.joint_greeting'];
 		if(! (array_key_exists( $token_joint_casual , $cur_contact) ) ){
-			$cid = $cur_contact[contact_id];
+			$cid = $cur_contact['contact_id'];
 			if(strlen($cid_list) > 0 && strlen($cid) >0   ){
 				$cid_list = $cid_list.",";
 
@@ -731,11 +731,18 @@ function process_singles(&$suffixes, &$prefixes, &$values, $greetings_token_name
 			$cur_cid = $contact_dao->id;
 			$cur_contact_type = $contact_dao->contact_type;
 			$prefix_id = $contact_dao->prefix_id ;
-			$prefix_label  = $prefixes[$prefix_id];
-	   
+			if(strlen($prefix_id)> 0){
+				$prefix_label  = $prefixes[$prefix_id];
+			}else{
+				$prefix_label = "";
+			}
+			
 			$suffix_id = $contact_dao->suffix_id ;
-			$suffix_label  = $suffixes[$suffix_id];
-
+			if(strlen( $suffix_id ) > 0 ){
+				$suffix_label  = $suffixes[$suffix_id];
+			}else{
+				$suffix_label  = "";
+			}
 			// deal with genders
 			$gender_id = $contact_dao->gender_id;
 			if ($gender_id  == 1){
@@ -799,10 +806,18 @@ function process_singles(&$suffixes, &$prefixes, &$values, $greetings_token_name
 			$cur_cid = $contact_dao->id;
 			$cur_contact_type = $contact_dao->contact_type;
 			$prefix_id = $contact_dao->prefix_id ;
-			$prefix_label  = $prefixes[$prefix_id];
-	   
+			
+			if( strlen( $prefix_id  ) > 0 ){
+				$prefix_label  = $prefixes[$prefix_id];
+			}else{
+				$prefix_label  = "";
+			}
 			$suffix_id = $contact_dao->suffix_id ;
-			$suffix_label  = $suffixes[$suffix_id];
+			if( strlen($suffix_id) > 0 ){
+				$suffix_label  = $suffixes[$suffix_id];
+			}else{
+				$suffix_label  = "";
+			}
 
 			// deal with genders
 			$gender_id = $contact_dao->gender_id;
