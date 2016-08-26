@@ -4,9 +4,9 @@
   <name>Save time preparing newsletters: Fancy tokens for upcoming events, contribution pages, and forms</name>
   <description>Additional tokens for contribution pages, upcoming event lists, individual event registration pages, and stand-alone CiviCRM profiles. If Drupal WebForm is in use, then any webforms that use CiviCRM integration will also be available as a token.  All hyperlinks include the recipient checksum as appropriate. To see the additional tokens, start composing an email and click 'insert tokens'.</description>
   <urls>
-    <url desc="Main Extension Page">http://fountaintribe.com</url>
-    <url desc="Documentation">http://fountaintribe.com</url>
-    <url desc="Support">http://fountaintribe.com</url>
+    <url desc="Main Extension Page">https://civicrm.org/extensions/fancy-tokens</url>
+    <url desc="Documentation">https://civicrm.org/extensions/fancy-tokens</url>
+    <url desc="Support">https://github.com/sgladstone/com.pogstone.fancytokens/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <license>AGPL-3.0</license>
