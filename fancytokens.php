@@ -143,7 +143,27 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	
 	}	
 	
+	
+	$tok_category_label = " :: Greeting"; 
+	
+	$tokens['greetings'] = array(
+			'greetings.joint_casual' => 'Casual: Mike and Judy Kline (Uses nickname if available) '.$tok_category_label,
+			'greetings.solo_casual' => 'Casual: Mike Kline (Uses nickname if available, does not show spouse) '.$tok_category_label,
+			'greetings.joint_casual_firstname_lastname' => 'Casual first name and last name: Michael and Judith Kline'.$tok_category_label,
+			'greetings.joint_casual_nickname_only' => 'Casual nickname only: Mike and Judy (Uses nickname if available)'.$tok_category_label,
+			'greetings.solo_casual_nickname_only' => 'Casual nickname only: Mike(Uses nickname if available, does not show spouse)'.$tok_category_label,
+			'greetings.joint_casual_firstname_only' => 'Casual first name only: Michael and Judith'.$tok_category_label,
+			'greetings.joint_formal' => 'Formal: Mr. and Mrs. Kline'.$tok_category_label,
+			'greetings.joint_formal_firstname' => 'Formal with first name: Mr. and Mrs. Michael Kline'.$tok_category_label,
+			 
+	);
+	
+	
  }
+  
+ 
+ 	
+ 	
 	
   function getUserFrameworkDatabaseName(){
   	// ['userFrameworkDSN'] => mysql://dev1_username:mypassword@localhost/dev1_main?new_link=true
@@ -166,7 +186,42 @@ function fancytokens_civicrm_tokens( &$tokens ){
   function fancytokens_civicrm_tokenValues( &$values, &$contactIDs, $job = null, $tokens = array(), $context = null) {
   
   
-      	
+  	if (!empty($tokens['greetings'])) {
+  	
+  		$greetings_token_names = array(
+  				'greetings.joint_casual' => 'greetings.joint_casual',
+  				'greetings.joint_casual_firstname_lastname' => 'greetings.joint_casual_firstname_lastname',
+  				'greetings.joint_casual_nickname_only' => 'greetings.joint_casual_nickname_only',
+  				'greetings.joint_casual_firstname_only' => 'greetings.joint_casual_firstname_only',
+  				'greetings.solo_casual'  => 'greetings.solo_casual',
+  				'greetings.solo_casual_nickname_only' => 'greetings.solo_casual_nickname_only',
+  	
+  				'greetings.joint_formal' => 'greetings.joint_formal',
+  				'greetings.joint_formal_firstname' => 'greetings.joint_formal_firstname',
+  	
+  		);
+  		if ( is_array( $contactIDs ) ) {
+  	
+  			require_once ('utils/GreetingHelper.php');
+  			
+  			$tmpGreetingHelper = new GreetingHelper();
+  			$prefixes = $tmpGreetingHelper->get_all_prefixes();
+  			$suffixes = $tmpGreetingHelper->get_all_suffixes();
+  	
+  			$tmp_contactIds = $contactIDs ;
+  			// process all spouses using 'Spouse of' relationships.
+  			$household_id  = '';
+  			$tmpGreetingHelper->process_spouses( $suffixes, $prefixes, $values, $contactIDs , $greetings_token_names, $household_id );
+  			$tmpGreetingHelper->process_households( $suffixes, $prefixes, $values, $contactIDs , $greetings_token_names);
+  			// process people not in households and without spouses.
+  			$tmpGreetingHelper->process_singles( $suffixes, $prefixes, $values, $greetings_token_names);
+  	
+  			// process organizations
+  			$tmpGreetingHelper->process_organizations( $suffixes, $prefixes, $values, $greetings_token_names);
+  	
+  		}
+  		
+  	}
 	    
   if(!empty($tokens['communitynews'])){
        

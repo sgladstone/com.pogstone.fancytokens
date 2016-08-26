@@ -13,3 +13,5 @@ Main features:
    D) There is one token for each active profile that does not use any fields that would prevent it from being used as a stand-alone profile form. For example, it does not create tokens for profiles that use participant or contribution fields. This token will produce a hyperlink that includes the checksum for the recipient. The clickable text will be the title of the profile.  
 
   E) If this extension is running under Drupal and the CiviCRM-WebForm integration module is installed, then one token will be created for each published WebForm.  (This logic checks if Drupal is in use before attempting to call any Drupal APIs. So this extension is safe to use with WordPress, Joomla and Stand-Alone.  (Note: The only version of Drupal this has been tested with is Drupal7.)
+  
+  F) There are a set of tokens under the category "Greetings" that provide convenient tokens for addressing married couples, households, and also single people.  For example, Sometimes you want to use the nickname if not empty, otherwise fallback to their first name. (The greetings for couples currently only work for the English language)
