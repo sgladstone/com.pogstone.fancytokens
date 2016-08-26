@@ -210,6 +210,8 @@ function fancytokens_civicrm_tokens( &$tokens ){
   			$tmpGreetingHelper->process_solo_greetings( $suffixes, $prefixes, $values, $contactIDs , $greetings_token_names);
   			
   			
+  			// if any token is empty, use display_name of contact.
+  		//	$tmpGreetingHelper->avoid_empty_tokens(  $values, $contactIDs , $greetings_token_names);
   	
   		}
   		

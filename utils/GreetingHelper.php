@@ -123,7 +123,8 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 	$current_family = array();
 	// print "<br><br>Inside process_spouses: ".$id_list;
 	$sqlstr = "SELECT rel.contact_id_a  as cid_a, rel.contact_id_b as cid_b,  c1.prefix_id  , c1.first_name, c1.nick_name,
-	c1.last_name, c1.suffix_id, c1.birth_date, c1.gender_id, c1.is_deceased , c1.contact_type as contact_type_a, 
+	c1.last_name, c1.suffix_id, c1.birth_date, c1.gender_id, c1.is_deceased ,
+	c1.contact_type as contact_type_a, 
 	c2.prefix_id as spouse_prefix_id,
 	c2.first_name as spouse_first_name,  c2.nick_name as spouse_nick_name,  c2.last_name as spouse_last_name,
 	c2.suffix_id as spouse_suffix_id, c2.gender_id as spouse_gender_id, c2.is_deceased as spouse_is_deceased,
@@ -257,11 +258,11 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 			$cur_hh["contact_type"] = "Household";
 			$current_family[] = $cur_hh;
 			
-			print "\n Inside a household with no people";
 			
+			$this->process_family_greetings( $current_family, $values, $greetings_token_names);
 		}
 		
-		$this->process_family_greetings( $current_family, $values, $greetings_token_names);
+		
 	}
 	
 	
@@ -343,6 +344,41 @@ function greetings_determine_ending_content(){
 }
 
 
+
+function avoid_empty_tokens(  &$values, &$contactIDs , &$greetings_token_names){
+	
+	
+	foreach($contactIDs as $cur_id ){
+		if(array_key_exists($cur_id,  $values)){
+			foreach($greetings_token_names as $cur_token_name){
+			    $tmp = $values[$cur_id][$cur_token_name];
+			    if(isset( $values[$cur_id][$cur_token_name] ) && strlen(trim($tmp) > 0)){
+			    	
+			    }else{	
+					// Token value for this contact is empty, go get display_name
+			    	
+			    	$api_result = civicrm_api3('Contact', 'get', array(
+			    			'sequential' => 1,
+			    			'id' => $cur_id,
+			    	));
+			    		
+			    	if( $api_result['count'] == 1){
+			    		$tmp_display_name = $api_result['values'][0]['display_name'];
+			    		$values[$cur_id][$cur_token_name] = $tmp_display_name;
+			    	}
+			    		
+				
+			    }
+			}
+		}
+	}
+		
+		
+		
+	
+	
+	
+}
 /*********************************************************************************
  *  Get the greetings for everyone in a single family.
  *
@@ -367,10 +403,9 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 	// get family greeting
 	$have_greeting = false;
 	$needed_greets = array();
-
+	
 	foreach($family as $cur_contact){
 		$tmp_cid = $cur_contact['contact_id'];
-		$tmp_contact_type = $cur_contact['contact_type'];
 		
 		
 		//print "<br>tmp_cid: $tmp_cid";
@@ -400,33 +435,6 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 
 	if($have_greeting == false){
 		if(count($family) == 1){
-			
-			if($family[0]["contact_type"] == "Household"){
-				
-				if(array_key_exists($cur_hhid,  $values)){
-					$cur_hhid = $family[0]['contact_id'];
-					$hh_api_result = civicrm_api3('Contact', 'get', array(
-							'sequential' => 1,
-							'id' => $cur_hhid,
-					));
-					
-					if( $hh_api_result['count'] == 1){
-					$hh_display_name = $hh_api_result['values'][0]['display_name'];
-					
-					//print "<br> Contains hhid $cur_hhid use greeting: $greeting";
-					$values[$cur_hhid][$token_joint_casual] = $hh_display_name;
-					$values[$cur_hhid][$token_formal_short] = $values[$cur_hhid][$token_formal_long] = $hh_display_name ;
-					$values[$cur_hhid][$token_formal_fn_short] = $values[$cur_hhid][$token_formal_fn_long] = $hh_display_name;
-				
-				
-					$values[$cur_hhid][$token_joint_casual_firstname_only] = $hh_display_name;
-					$values[$cur_hhid][$token_joint_casual_firstname_lastname] = $hh_display_name;
-					$values[$cur_hhid][$token_joint_casual_nickname_only] = $hh_display_name;
-					
-					}
-				}
-				
-			}else{
 				
 				if( $family[0][spouse_last_name]){
 					// this is a married couple or a widow.
@@ -441,7 +449,7 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 					$needed_greets = $this->get_formatted_greeting_for_single( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $uses_spouses_name,  $family[0]['nick_name'] );
 						
 				}
-			}
+			
 			}else if(count($family) >= 2){
 				if($family[0]['is_deceased'] OR $family[1]['is_deceased'] ){
 					$needed_greets = $this->get_formatted_greeting_for_widow( $family[0]['prefix'], $family[0]['first_name'], $family[0]['last_name'], $family[0]['suffix'], $family[0]['gender'], $family[0]['is_deceased'], $family[1]['prefix'], $family[1]['first_name'], $family[1]['last_name'], $family[1]['suffix'], $family[1]['gender'], $family[1]['is_deceased'] );
@@ -502,7 +510,7 @@ function process_family_greetings( &$family, &$values, $greetings_token_names){
 	}
 
 
-	// print "<br><b>End of process_family_greetings</b><br>";
+	
 }
 
 
