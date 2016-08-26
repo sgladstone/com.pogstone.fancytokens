@@ -1,6 +1,6 @@
 Install this extension as you would any other CiviCRM extension.  If you are using Drupal Webforms and your Drupal tables are in a different database than your CiviCRM tables then you will need to verify that the CiviCRM database user has permission to query tables in the Drupal database. 
 
-This extension provides additional mail merge tokens for CiviCRM for use in emails, mass emails, or PDF letters. All the token descriptions start with "Community News & Enagagement". 
+This extension provides additional mail merge tokens for CiviCRM for use in emails, mass emails, or PDF letters. All the tokens are under one of the following token categories:  "Events", "Contribution Pages", "Forms" or "Greeting"
 
 Main features:
 
@@ -15,3 +15,22 @@ Main features:
   E) If this extension is running under Drupal and the CiviCRM-WebForm integration module is installed, then one token will be created for each published WebForm.  (This logic checks if Drupal is in use before attempting to call any Drupal APIs. So this extension is safe to use with WordPress, Joomla and Stand-Alone.  (Note: The only version of Drupal this has been tested with is Drupal7.)
   
   F) There are a set of tokens under the category "Greetings" that provide convenient tokens for addressing married couples, households, and also single people.  For example, Sometimes you want to use the nickname if not empty, otherwise fallback to their first name. (The greetings for couples currently only work for the English language)
+     Greeting tokens:
+     	
+     	'greetings.joint_casual' - 'Casual: Mike and Judy Kline (Uses nickname if available) '
+		
+		'greetings.solo_casual' - 'Casual: Mike Kline (Uses nickname if available, does not show spouse) '
+		
+		'greetings.joint_casual_firstname_lastname' - 'Casual first name and last name: Michael and Judith Kline'
+		
+		'greetings.joint_casual_nickname_only' - 'Casual nickname only: Mike and Judy (Uses nickname if available)'
+		
+		'greetings.solo_casual_nickname_only' - 'Casual nickname only: Mike(Uses nickname if available, does not show spouse)'
+		
+		'greetings.joint_casual_firstname_only' - 'Casual first name only: Michael and Judith'
+		
+		'greetings.joint_formal' - 'Formal: Mr. and Mrs. Kline'
+		
+		'greetings.joint_formal_firstname' - 'Formal with first name: Mr. and Mrs. Michael Kline'
+			 
+  If any of these greeting tokens are used for an organization, then the display name is used. 
