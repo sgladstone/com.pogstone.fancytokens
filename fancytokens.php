@@ -146,6 +146,24 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	);
 	
 	
+	$tok_category_label = " :: Dates";
+	
+	$tokens['dates'] = array(
+			'dates.today' => 'Today (m/d/yyyy)'.$tok_category_label,
+			'dates.today___j_F_yyyy' => 'Today (d monthname yyyy)'.$tok_category_label,
+			'dates.today___F_j_yyyy' => 'Today (monthname d, yyyy)'.$tok_category_label,
+			'dates.birth_date___F_j' => 'Birth Date (monthname d)'.$tok_category_label,
+	);
+	
+	$tok_category_label = " :: Communication";
+	$tokens['communication'] = array(
+			'communication.phone_all' => 'All Phone Numbers'.$tok_category_label,
+			'communication.email_all' => 'All Email Addresses'.$tok_category_label,
+	
+	);
+	
+	
+	
  }
   
  
@@ -173,6 +191,77 @@ function fancytokens_civicrm_tokens( &$tokens ){
   function fancytokens_civicrm_tokenValues( &$values, &$contactIDs, $job = null, $tokens = array(), $context = null) {
   
   
+
+  	if(!empty($tokens['dates'])){
+  		// deal with tokens for 'today', birth_date', and similar.
+  	
+  		$today = date_create();
+ 
+  		foreach ( $contactIDs as $cid ) {
+  			$values[$cid]['dates.today'] =  date("n/j/Y");
+  			$values[$cid]['dates.today___j_F_yyyy'] = date("j F Y");
+  			$values[$cid]['dates.today___F_j_yyyy'] =  date("F j, Y");
+  	
+  	
+  		}
+  		$birthday_token = 'dates.birth_date___F_j' ;
+  		 
+  		
+  		while( $cur_token_raw = current( $tokens['dates'] )){
+  			
+  			$tmp_key = key($tokens['dates']);
+  			$cur_token = '';
+  			if(  is_numeric( $tmp_key)){
+  				$cur_token = $cur_token_raw;
+  			}else{
+  				// Its being used by CiviMail.
+  				$cur_token = $tmp_key;
+  			}
+  			 
+  			$token_to_fill = 'dates.'.$cur_token;
+  			 
+  			if($token_to_fill == $birthday_token ){
+  			
+				  		$sql_cids = implode( ",", $contactIDs);
+				  		
+				  		if( strlen( $sql_cids) > 0 ){
+				  			$sql = "select c.id as contact_id, date_format( c.birth_date, '%M %e')  as birth_date
+							FROM civicrm_contact c
+							WHERE c.id IN ( ".$sql_cids." )
+							ORDER BY c.id" ;
+				  			$dao =& CRM_Core_DAO::executeQuery( $sql,   CRM_Core_DAO::$_nullArray ) ;
+				  		
+				  		
+				  				
+				  			while($dao->fetch()){
+				  				$cid = $dao->contact_id ;
+				  				$birth_date_formatted = $dao->birth_date;
+				  		
+				  				$values[$cid][$birthday_token] = $birth_date_formatted ;  				 
+				  			}
+				  			 
+				  			$dao->free();
+				  		}
+  			}
+  		
+	  		next($tokens['dates']);
+	  		}
+  	}
+  	
+  	if(!empty($tokens['communication'] )){
+  		$phone_token = 'communication.phone_all' ;
+  		 
+  		$email_token = 'communication.email_all' ;
+  	
+  		require_once( 'utils/CommunicationTokenHelper.php');
+  		$commUtils = new CommunicationTokenHelper();
+  	
+  		$commUtils->getTableOfPhones($contactIDs, $values, $phone_token );
+  		$commUtils->getTableOfEmails($contactIDs, $values, $email_token );
+  		 
+  	}
+  	
+  	
   	if (!empty($tokens['greetings'])) {
   	
   		$greetings_token_names = array(
