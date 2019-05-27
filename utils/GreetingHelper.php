@@ -194,15 +194,19 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 		$gender_id = $contact_dao->gender_id;
 		if ($gender_id  == 1){
 			$gender_label = "Female";
-		}else{
+		}else if ($gender_id  == 2 ) {
 			$gender_label = "Male";
+		}else{
+			$gender_label = "";
 		}
 
 		$spouse_gender_id = $contact_dao->spouse_gender_id;
 		if ($spouse_gender_id  == 1){
 			$spouse_gender_label = "Female";
-		}else{
+		}else if ($gender_id  == 2 )
 			$spouse_gender_label = "Male";
+		else{
+			$gender_label = "";
 		}
 		 
 		 
@@ -699,8 +703,10 @@ function determine_title($prefix, $gender, $uses_spouses_name){
 			$prefix = "Mrs.";
 		}else if($gender == 'Female'){
 			$prefix = "Ms.";
+		}else if($gender == 'Male'){
+			$prefix = "Mr."
 		}else{
-			$prefix = "Mr.";
+			$prefix = "UNKNOWN PREFIX";
 		}
 	}else if( $prefix == 'Mr' or $prefix == 'Mr.' or $prefix == 'Mrs' or $prefix == 'Mrs.' or $prefix == 'Ms' or $prefix == 'Ms.' or $prefix == 'Miss'){
 		$prefix_info['real_title'] = false;
