@@ -491,7 +491,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	               ( e.registration_start_date is null || now() >= e.registration_start_date ), '1', '0') as 
 	             show_registration_link  
 	             FROM civicrm_event e 
-	            WHERE e.is_active = 1 AND e.is_public = 1  AND e.is_template <> 1 AND 
+	            WHERE e.is_active = 1 AND e.is_template <> 1 AND 
 	            e.start_date >= now() AND e.id = '".$token_event_id."'  
 	            ORDER BY e.start_date";
 	            
