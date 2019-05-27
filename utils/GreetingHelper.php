@@ -704,7 +704,7 @@ function determine_title($prefix, $gender, $uses_spouses_name){
 		}else if($gender == 'Female'){
 			$prefix = "Ms.";
 		}else if($gender == 'Male'){
-			$prefix = "Mr."
+			$prefix = "Mr.";
 		}else{
 			$prefix = "UNKNOWN PREFIX";
 		}
