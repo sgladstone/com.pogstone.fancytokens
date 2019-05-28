@@ -153,6 +153,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
 			'dates.today___j_F_yyyy' => 'Today (d monthname yyyy)'.$tok_category_label,
 			'dates.today___F_j_yyyy' => 'Today (monthname d, yyyy)'.$tok_category_label,
 			'dates.birth_date___F_j' => 'Birth Date (monthname d)'.$tok_category_label,
+			'dates.checksum_expiration' => 'Checksum Expiration Date '.$tok_category_label,
 	);
 	
 	$tok_category_label = " :: Communication";
@@ -197,13 +198,25 @@ function fancytokens_civicrm_tokens( &$tokens ){
   	
   		$today = date_create();
  
-  		foreach ( $contactIDs as $cid ) {
-  			$values[$cid]['dates.today'] =  date("n/j/Y");
-  			$values[$cid]['dates.today___j_F_yyyy'] = date("j F Y");
-  			$values[$cid]['dates.today___F_j_yyyy'] =  date("F j, Y");
-  	
-  	
-  		}
+		if ($checksum_expire_result['is_error']  == 0 && $checksum_expire_result['count'] == 1){
+                    $tmp_checksum_int = $checksum_expire_result['values'][0]['checksum_timeout'];
+                    $interval_str =  $tmp_checksum_int." days" ;
+                    $exp_date = date_create();
+                    date_add($exp_date, date_interval_create_from_date_string($interval_str));
+                    $checksum_expire_date_tmp = date_format($exp_date, 'F j');
+                }else{
+
+#                   print_r(  $checksum_expire_result );
+                }
+
+                foreach ( $contactIDs as $cid ) {
+                        $values[$cid]['dates.today'] =  date("n/j/Y");
+                        $values[$cid]['dates.today___j_F_yyyy'] = date("j F Y");
+                        $values[$cid]['dates.today___F_j_yyyy'] =  date("F j, Y");
+                        $values[$cid]['dates.checksum_expiration'] = $checksum_expire_date_tmp ;
+
+                }
+
   		$birthday_token = 'dates.birth_date___F_j' ;
   		 
   		
