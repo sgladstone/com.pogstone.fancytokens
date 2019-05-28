@@ -915,8 +915,10 @@ function process_singles(&$suffixes, &$prefixes, &$values, $greetings_token_name
 			$gender_id = $contact_dao->gender_id;
 			if ($gender_id  == 1){
 				$gender_label = "Female";
+			}else if($gender_id == 2){
+			        $gender_label = "Male";	
 			}else{
-				$gender_label = "Male";
+				$gender_label = "";
 			}
 	   
 			$cur_prefix = $prefix_label;
@@ -991,8 +993,10 @@ function process_singles(&$suffixes, &$prefixes, &$values, $greetings_token_name
 			$gender_id = $contact_dao->gender_id;
 			if ($gender_id  == 1){
 				$gender_label = "Female";
+			}else if($gender_id == 2){
+			        $gender_label = "Male";	
 			}else{
-				$gender_label = "Male";
+				$gender_label = "";
 			}
 	   
 			$cur_prefix = $prefix_label;
