@@ -206,7 +206,7 @@ function process_spouses(&$suffixes, &$prefixes, &$values, &$contactIDs, $greeti
 		}else if ($gender_id  == 2 )
 			$spouse_gender_label = "Male";
 		else{
-			$gender_label = "";
+			$spouse_gender_label = "";
 		}
 		 
 		 
