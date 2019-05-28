@@ -348,12 +348,30 @@ function fancytokens_civicrm_tokens( &$tokens ){
        $civi_url =  CRM_Utils_System::url('civicrm/example', NULL, TRUE, NULL, FALSE);
       $website_host_name = parse_url( $civi_url, PHP_URL_HOST );
       
-        $ssl_in_use = $_SERVER['HTTPS'];
-	if( strlen($ssl_in_use) > 0){
-		$protocol = "https://"; 
-	}else{
-		$protocol = "http://";
-	}
+        $isSecure = false;
+if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
+    $isSecure = true;
+}elseif ( ( !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) &&  strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https') ||
+  (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower( $_SERVER['HTTP_X_FORWARDED_SSL']) == 'on') ) {
+    $isSecure = true;
+}
+$protocol = $isSecure ? 'https://' : 'http://';
+
+
+/*
+        if ( array_key_exists( 'HTTPS', $_SERVER )){
+             $ssl_in_use = $_SERVER['HTTPS'];
+             if( strlen($ssl_in_use) > 0){
+                $protocol = "https://";
+             }else{
+                $protocol = "http://";
+              }
+        }else{
+                $protocol = "http://";
+
+        }
+*/
+
 	
         while( $cur_token_raw = current( $tokens['communitynews'] )){
 	 	$tmp_key = key($tokens['communitynews']); 
