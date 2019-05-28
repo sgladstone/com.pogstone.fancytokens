@@ -198,6 +198,9 @@ function fancytokens_civicrm_tokens( &$tokens ){
   	
   		$today = date_create();
  
+		$checksum_expire_result = civicrm_api3('Setting', 'get', [  'sequential' => 1,  'return' => ["checksum_timeout"], ]);
+                $checksum_expire_date_tmp = "" ;
+
 		if ($checksum_expire_result['is_error']  == 0 && $checksum_expire_result['count'] == 1){
                     $tmp_checksum_int = $checksum_expire_result['values'][0]['checksum_timeout'];
                     $interval_str =  $tmp_checksum_int." days" ;
