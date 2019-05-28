@@ -58,6 +58,27 @@ function fancytokens_civicrm_tokens( &$tokens ){
 		   }	   
 	   }
 	
+	// Create tokens for all active Petitions ( part of CiviCampaign)
+        $params = array(
+          'sequential' => 1,
+          'is_active' => 1,
+          'activity_type_id.name'  => 'Petition',
+        );
+        $result = civicrm_api3('Survey', 'get', $params);
+        if( $result['is_error'] <> 0 ){
+            print "<br><br>Error calling get API for Survey-Petition";
+            print_r($result);
+        }else{
+                   $petitions = $result['values'] ;
+                   foreach($petitions as $cur){
+
+                            $key = 'communitynews.signpetition___'.$cur['id'] ;
+                            $label = $cur['title'].' (id: '.$cur['id'].') :: Petitions';
+
+                           $tokens['communitynews'][$key] = $label;
+                   }
+           }
+
 	
 	// Get all active profiles and create tokens for the ones that can be stand-alone. 
 	$params = array(
@@ -416,7 +437,37 @@ function fancytokens_civicrm_tokens( &$tokens ){
 	           
 	           }
 	        
-	        
+		}else if( $partial_token == 'signpetition'){
+
+#  https://something.org/civicrm/petition/sign?reset=1&sid=IDNUMBER&{contact.checksum}&cid={contact.contact_id}
+                   $petition_id = $token_as_array[1];
+                   $partial_petition_link_url = CRM_Utils_System::url('civicrm/petition/sign', 'reset=1&sid=', TRUE, NULL, TRUE, TRUE);
+
+
+            if( is_numeric( $petition_id )){
+
+                     $params = array(
+                                  'version' => 3,
+                                  'sequential' => 1,
+                                  'id' => $petition_id,
+                                );
+                        $result = civicrm_api('Survey', 'getsingle', $params);
+                         $link_label = $result['title'];
+
+                       foreach ( $contactIDs as $cid ) {
+
+                            $tmp_checksum = CRM_Contact_BAO_Contact_Utils::generateChecksum($cid);
+                             $full_petition_link = $partial_petition_link_url.$petition_id."&cs=".$tmp_checksum."&cid=".$cid;
+                            $tmp_petition_html = "<a href='".$full_petition_link."'>".$link_label."</a>";
+
+                           $values[$cid][$token_to_fill] =  $tmp_petition_html;
+
+
+                       }
+
+
+                   }
+
 	        }else if( $partial_token == 'upcomingevents'){
 	        
 	            $token_date = $token_as_array[1];
