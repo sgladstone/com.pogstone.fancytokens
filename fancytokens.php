@@ -344,10 +344,11 @@ function fancytokens_civicrm_tokens( &$tokens ){
   	}
 	    
   if(!empty($tokens['communitynews'])){
-       
+       /*
        $civi_url =  CRM_Utils_System::url('civicrm/example', NULL, TRUE, NULL, FALSE);
       $website_host_name = parse_url( $civi_url, PHP_URL_HOST );
       
+	  
         $isSecure = false;
 if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
     $isSecure = true;
@@ -356,7 +357,7 @@ if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
     $isSecure = true;
 }
 $protocol = $isSecure ? 'https://' : 'http://';
-
+*/
 
 /*
         if ( array_key_exists( 'HTTPS', $_SERVER )){
