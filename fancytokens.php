@@ -654,9 +654,12 @@ $protocol = $isSecure ? 'https://' : 'http://';
   		     	$tmp_alias = $record->alias; 
   		     	$tmp_nid = $record->nid; 
   		     	if( strlen( $tmp_alias) > 0){
-  		     		$partial_webform_link_url = $protocol.$website_host_name."/".$tmp_alias; 
+  		     		//$partial_webform_link_url = $protocol.$website_host_name."/".$tmp_alias;
+				$partial_webform_link_url = CRM_Utils_System::url($tmp_alias, "", TRUE, NULL, TRUE, TRUE);
+		
   		     	}else{
-  		     		$partial_webform_link_url = $protocol.$website_host_name."/node/".$tmp_nid; 
+  		     		//$partial_webform_link_url = $protocol.$website_host_name."/node/".$tmp_nid; 
+				$partial_webform_link_url = CRM_Utils_System::url("/node/".$tmp_nid , "", TRUE, NULL, TRUE, TRUE);
   		     	}
   		     	$link_label = $tmp_title; 
   		     	
