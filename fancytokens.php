@@ -692,7 +692,7 @@ $protocol = $isSecure ? 'https://' : 'http://';
   		     foreach ( $contactIDs as $cid ) {
 	                   
   		     	    $tmp_checksum = CRM_Contact_BAO_Contact_Utils::generateChecksum($cid); 
-  		     	    $full_webform_link = $partial_webform_link_url."?"."cs=".$tmp_checksum."&cid=".$cid; 
+  		     	    $full_webform_link = $partial_webform_link_url."cs=".$tmp_checksum."&cid=".$cid; 
   		     	    $tmp_webform_html = "<a href='".$full_webform_link."'>".$link_label."</a>";
   		     	    
 	                   $values[$cid][$token_to_fill] =  $tmp_webform_html;
