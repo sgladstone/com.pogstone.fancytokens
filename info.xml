@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extension key="com.pogstone.fancytokens" type="module">
   <file>fancytokens</file>
-  <name>Save time preparing newsletters: Fancy tokens for upcoming events, contribution pages, and forms</name>
-  <description>Additional tokens for contribution pages, upcoming event lists, individual event registration pages, and stand-alone CiviCRM profiles. If Drupal WebForm is in use, then any webforms that use CiviCRM integration will also be available as a token.  All hyperlinks include the recipient checksum as appropriate. To see the additional tokens, start composing an email and click 'insert tokens'.</description>
+  <name>Save time preparing newsletters: Fancy tokens for upcoming events, petitions, contribution pages, and forms</name>
+  <description>Additional tokens for contribution pages, upcoming event lists, petitions, individual event registration pages, and stand-alone CiviCRM profiles. If Drupal WebForm is in use, then any webforms that use CiviCRM integration will also be available as a token.  All hyperlinks include the recipient checksum as appropriate. To see the additional tokens, start composing an email and click 'insert tokens'.</description>
   <urls>
     <url desc="Main Extension Page">https://civicrm.org/extensions/fancy-tokens</url>
     <url desc="Documentation">https://civicrm.org/extensions/fancy-tokens</url>
@@ -14,8 +14,8 @@
     <author>Sarah Gladstone</author>
     <email>info@fountaintribe.com</email>
   </maintainer>
-  <releaseDate>2019-05-28</releaseDate>
-  <version>5.0</version>
+  <releaseDate>2019-05-30</releaseDate>
+  <version>5.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.9</ver>
