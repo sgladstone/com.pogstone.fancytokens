@@ -20,7 +20,7 @@
   <compatibility>
     <ver>5.9</ver>
   </compatibility>
-  <comments></comments>
+  <comments/>
   <civix>
     <namespace>CRM/Fancytokens</namespace>
   </civix>
