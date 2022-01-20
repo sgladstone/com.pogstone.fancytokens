@@ -21,7 +21,7 @@ function fancytokens_civicrm_tokens( &$tokens ){
   	AND ( e.registration_end_date is null || now() <= e.registration_end_date ) 
   	AND ( e.registration_start_date is null || now() >= e.registration_start_date )
   	ORDER BY e.start_date
-  	LIMIT 15 ";
+  	 ";
   	
   	 $dao =& CRM_Core_DAO::executeQuery( $event_sql,   CRM_Core_DAO::$_nullArray ) ;
 	
